@@ -5,9 +5,9 @@ Scripts to synchronize the iTunes library with an Ubuntu Phone, including music 
 
 By selecting which iTunes playlists you want to synchronize, the script automatically synchronizes all the tracks from these playlists to your phone and creates the playlists in the Music application.
 
-![Synchronizing](http://thomasmuguet/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/syncing.png)
+![Synchronizing](http://thomasmuguet.info/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/syncing.png)
 
-![Playlists in the Music app](http://thomasmuguet/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/screenshot.png)
+![Playlists in the Music app](http://thomasmuguet.info/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/screenshot.png)
 
 This script has been tested with the latest iTunes on Mac OS X 10.9.5 with a BQ Aquaris 4.5 Ubuntu Edition running Ubuntu 14.10 (r20) and Music app 2.0.846.
 
@@ -29,7 +29,7 @@ First, edit the `itunes-sync.py` with a text editor to set the parameters:
 * `itunes_music_library`: location of your iTunes music library file (default value should be OK)
 * `playlists_to_synchronize`: names of the playlists you want to synchronize
 * `music_destination`: destination on your phone for the tracks; a `itunes-sync` subfolder will be created
-* `ssh_destination`: SSH user and hostname of your phone
+* `ssh_destination`: SSH user and hostname of your phone (default value should be OK)
 
 Once done, you're ready to go:
 
