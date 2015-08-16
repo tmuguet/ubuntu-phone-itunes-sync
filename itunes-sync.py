@@ -194,3 +194,7 @@ call(["scp", "itunes-sync.pkl", ssh_destination + ":~/"], logger)
 call(["scp", "create-playlists.py", ssh_destination + ":~/"], logger)
 call(["ssh", ssh_destination, "python3", "create-playlists.py"], logger)
 
+# Clean intermediate files
+logger.info("Cleaning...")
+shutil.rmtree('itunes-sync')
+os.remove('itunes-sync.pkl')
