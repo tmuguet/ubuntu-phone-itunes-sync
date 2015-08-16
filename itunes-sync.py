@@ -186,8 +186,8 @@ logger.info("Transferring to " + ssh_destination + ":" + music_destination + "..
 call(["rsync", "-ruLvz", "--delete", "--progress", "--stats", "--exclude='.DS_Store'", "itunes-sync", ssh_destination + ":" + music_destination], logger)
 
 # If mediascanner is too slow, this will fail...
-time.sleep(60)
 logger.info("Creating playlists...")
+time.sleep(10)
 
 # Send the data, the script to create playlists and run it
 call(["scp", "itunes-sync.pkl", ssh_destination + ":~/"], logger)
