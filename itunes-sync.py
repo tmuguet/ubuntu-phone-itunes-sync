@@ -8,9 +8,18 @@ import os
 import os.path
 import shutil
 import urllib
-from subprocess import call
+import subprocess
 import pickle
 import time
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+steam_handler = logging.StreamHandler()
+steam_handler.setLevel(logging.DEBUG)
+logger.addHandler(steam_handler)
+
 
 config = ConfigParser.ConfigParser()
 config.read('settings.ini')
@@ -26,7 +35,7 @@ music_destination = config.get('phone', 'music_destination')
 ssh_destination = config.get('phone', 'ssh_destination')
 
 
-print "Loading library"
+logger.info("Loading library")
 
 tree = ET.parse(os.path.expanduser(itunes_music_library))
 root = tree.getroot()
@@ -36,7 +45,7 @@ playlists = []
 tracks_used = {}
 total_size = 0
 
-print "Analyzing library"
+logger.info("Analyzing library")
 
 # Find root of music folder
 for dicts in root.findall(".//dict[key='Music Folder']"):
@@ -47,7 +56,7 @@ for dicts in root.findall(".//dict[key='Music Folder']"):
         if prev.text == 'Music Folder':
             library_root = current.text.replace('file://', '')
         prev = current
-
+logger.debug("Found library root: " + library_root)
 
 # Find all tracks in library
 for dicts in root.findall(".//dict[key='Location']"):
@@ -76,8 +85,8 @@ for dicts in root.findall(".//dict[key='Location']"):
             track_size = int(current.text)
         prev = current
 
-    if not library_root in track_location:
-        print "Ignoring file outside library: " + track_id + " @ " + os.path.basename(track_location)
+    if not track_location.startswith(library_root):
+        logger.warning("Ignoring file outside library: #" + track_id + " at " + track_location)
         continue
 
     track_location = os.path.abspath(urllib.unquote(track_location))    # Location of file on this FS
@@ -94,7 +103,7 @@ for dicts in root.findall(".//dict[key='Location']"):
         'size': track_size
     }
 
-print "Found " + str(len(tracks)) + " tracks"
+logger.info("Found " + str(len(tracks)) + " tracks")
 
 # Find all playlists
 for dicts in root.findall(".//dict[key='Playlist ID']"):
@@ -117,7 +126,7 @@ for dicts in root.findall(".//dict[key='Playlist ID']"):
     for t in dicts.findall(".//dict[key='Track ID']/integer"):
         id = t.text
         if not id in tracks:
-            print "Could not find track #" + id
+            logger.warning("Could not find track #" + id + " in library")
             continue
 
         playlist_tracks.append(t.text)
@@ -125,12 +134,12 @@ for dicts in root.findall(".//dict[key='Playlist ID']"):
             tracks_used[id] = tracks[id]
             total_size += tracks[id]['size']
 
-    print "Found playlist " + playlist_name + " (" + str(len(playlist_tracks)) + " tracks)"
+    logger.info("Found playlist " + playlist_name + " (" + str(len(playlist_tracks)) + " tracks)")
     playlists.append({'name': playlist_name, 'tracks': playlist_tracks})
 
 
 
-print "Preparing transfer of " + str(len(tracks_used)) + " tracks - " + str(total_size/(1024*1024)) + "MB"
+logger.info("Preparing transfer of " + str(len(tracks_used)) + " tracks - " + str(total_size/(1024*1024)) + "MB")
 
 # Export data to send to the phone for creating playlists
 output = open('itunes-sync.pkl', 'wb')
@@ -138,7 +147,7 @@ pickle.dump(playlists, output)
 pickle.dump(tracks_used, output, -1)
 output.close()
 
-# Clean and rec-reate a fake music folder to synchronize on the phone
+# Clean and re-create a fake music folder with symlinks to synchronize on the phone
 if os.path.isdir("itunes-sync"):
     shutil.rmtree('itunes-sync')
 
@@ -149,14 +158,14 @@ for id,track in tracks_used.iteritems():
     full_filename = full_dir + "/" + filename
 
     if not os.path.exists(track['location_full_path']):
-        print "Could not find file " + track['location_full_path']
+        logger.warning("Could not find file " + track['location_full_path'])
         continue
 
     if not os.path.isdir(full_dir):
         os.makedirs(full_dir)
     if os.path.exists(full_filename):
         # Can happen if a file is imported twice in iTunes
-        print "File already exists " + full_filename
+        logger.warning("File already exists " + full_filename)
         continue
 
     os.symlink(track['location_full_path'], full_filename)
@@ -164,15 +173,24 @@ for id,track in tracks_used.iteritems():
 
 # Folder is ready to synchronize
 
-print "Transferring..."
+def call(args, log):
+    s = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    while True:
+        line = s.stdout.readline()
+        if not line:
+            break
+        log.info(line.strip())
 
-call(["rsync", "-ruLvz", "--delete", "--progress", "--stats", "--exclude='.DS_Store'", "itunes-sync", ssh_destination + ":" + music_destination])
+
+logger.info("Transferring to " + ssh_destination + ":" + music_destination + "...")
+call(["rsync", "-ruLvz", "--delete", "--progress", "--stats", "--exclude='.DS_Store'", "itunes-sync", ssh_destination + ":" + music_destination], logger)
 
 # If mediascanner is too slow, this will fail...
-print "Creating playlists..."
 time.sleep(60)
+logger.info("Creating playlists...")
 
 # Send the data, the script to create playlists and run it
-call(["scp", "itunes-sync.pkl", ssh_destination + ":~/"])
-call(["scp", "create-playlists.py", ssh_destination + ":~/"])
-call(["ssh", ssh_destination, "python3", "create-playlists.py"])
+call(["scp", "itunes-sync.pkl", ssh_destination + ":~/"], logger)
+call(["scp", "create-playlists.py", ssh_destination + ":~/"], logger)
+call(["ssh", ssh_destination, "python3", "create-playlists.py"], logger)
+
