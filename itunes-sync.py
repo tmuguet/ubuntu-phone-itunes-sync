@@ -85,6 +85,10 @@ for dicts in root.findall(".//dict[key='Location']"):
             track_size = int(current.text)
         prev = current
 
+    if track_location.endswith('.ipa'):
+        # Ignore applications
+        continue
+
     if not track_location.startswith(library_root):
         logger.warning("Ignoring file outside library: #" + track_id + " at " + track_location)
         continue
