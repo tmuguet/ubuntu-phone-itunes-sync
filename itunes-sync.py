@@ -2,18 +2,7 @@
 
 # Main script to call to synchronize the iTunes library on the Ubuntu phone
 
-# Local iTunes library file
-itunes_music_library = '~/Music/iTunes/iTunes Music Library.xml'
-# List of playlists to synchronize
-playlists_to_synchronize = ['Flow', 'Metal', 'Pop', 'Rock', 'Soft Rock']
-# Destination of music on the phone
-# A 'itunes-sync' subfolder will be created with the synced music
-music_destination = '/media/phablet/D76D-C153/Music/'
-# SSH user+host to connect to
-ssh_destination = 'phablet@ubuntu-phablet'
-
-
-
+import ConfigParser
 import xml.etree.ElementTree as ET
 import os
 import os.path
@@ -22,6 +11,20 @@ import urllib
 from subprocess import call
 import pickle
 import time
+
+config = ConfigParser.ConfigParser()
+config.read('settings.ini')
+
+# Local iTunes library file
+itunes_music_library = config.get('itunes', 'music_library')
+# List of playlists to synchronize
+playlists_to_synchronize = list(filter(None, (x.strip() for x in config.get('itunes', 'playlists').splitlines())))
+# Destination of music on the phone
+# A 'itunes-sync' subfolder will be created with the synced music
+music_destination = config.get('phone', 'music_destination')
+# SSH user+host to connect to
+ssh_destination = config.get('phone', 'ssh_destination')
+
 
 print "Loading library"
 

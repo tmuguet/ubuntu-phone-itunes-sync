@@ -1,0 +1,15 @@
+[itunes]
+# Local iTunes library file
+music_library = ~/Music/iTunes/iTunes Music Library.xml
+# List of playlists to synchronize
+playlists =
+	MyPlaylist1
+	MyPlaylist2
+	MyPlaylist3
+
+[phone]
+# Destination of music on the phone
+# A 'itunes-sync' subfolder will be created with the synced music
+music_destination = /media/phablet/D76D-C153/Music/
+# SSH user+host to connect to
+ssh_destination = phablet@ubuntu-phablet
