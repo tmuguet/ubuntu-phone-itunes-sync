@@ -16,9 +16,9 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-steam_handler = logging.StreamHandler()
-steam_handler.setLevel(logging.DEBUG)
-logger.addHandler(steam_handler)
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+logger.addHandler(stream_handler)
 
 
 config = ConfigParser.ConfigParser()
@@ -59,7 +59,7 @@ for dicts in root.findall(".//dict[key='Music Folder']"):
         prev = current
 logger.debug("Found library root: " + library_root)
 if not os.path.isdir(library_root):
-    logger.error("Library root does not exist")
+    logger.error("Library root " + library_root + " does not exist")
     sys.exit(1)
 
 # Find all tracks in library
