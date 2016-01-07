@@ -9,7 +9,7 @@ By selecting which iTunes playlists you want to synchronize, the script automati
 
 ![Playlists in the Music app](http://thomasmuguet.info/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/screenshot.png)
 
-This script has been tested with latest iTunes (12.2) with a BQ Aquaris 4.5 Ubuntu Edition running r24 and Music app 2.2.892. Should work with previous versions (at least iTunes 12.0, Ubuntu r20 and Music app 2.0).
+This script has been tested with latest iTunes (12.3) with a BQ Aquaris 4.5 Ubuntu Edition running OTA 8.5 and Music app 2.2.945. Should work with previous versions (at least iTunes 12.0, Ubuntu r20 and Music app 2.0).
 
 
 ## Requirements
@@ -28,6 +28,7 @@ This script has been tested with latest iTunes (12.2) with a BQ Aquaris 4.5 Ubun
 First, create a `settings.ini` file based on `settings.ini.example` and edit it with a text editor to set the parameters:
 * `music_library`: location of your iTunes music library file (default value should be OK)
 * `playlists`: names of the playlists you want to synchronize (one per line)
+* `check_artwork` (`False`/`True`): whether to check or not if the tracks embed some artwork - requires [mutagen](https://bitbucket.org/lazka/mutagen)
 * `music_destination`: destination on your phone for the tracks; a `itunes-sync` subfolder will be created
 * `ssh_destination`: SSH user and hostname of your phone (default value should be OK)
 

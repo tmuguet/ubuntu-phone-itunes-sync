@@ -6,6 +6,9 @@ playlists =
 	MyPlaylist1
 	MyPlaylist2
 	MyPlaylist3
+# Whether to check if artwork is present or not in tracks (True/False)
+# Checking artwork will slow down processing and requires mutagen package
+check_artwork = False
 
 [phone]
 # Destination of music on the phone

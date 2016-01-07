@@ -26,6 +26,8 @@ config.read('settings.ini')
 
 # Local iTunes library file
 itunes_music_library = config.get('itunes', 'music_library')
+# Check artwork?
+check_artwork = config.getboolean('itunes', 'check_artwork')
 # List of playlists to synchronize
 playlists_to_synchronize = list(filter(None, (x.strip() for x in config.get('itunes', 'playlists').splitlines())))
 # Destination of music on the phone
@@ -34,6 +36,12 @@ music_destination = config.get('phone', 'music_destination')
 # SSH user+host to connect to
 ssh_destination = config.get('phone', 'ssh_destination')
 
+if check_artwork:
+    try:
+        from mutagen import File
+    except ImportError:
+        logger.warning("Could not import mutagen; turning off artwork check")
+        check_artwork = False
 
 logger.info("Loading library...")
 
@@ -44,6 +52,7 @@ tracks = {}
 playlists = []
 tracks_used = {}
 tracks_ignored = {}
+artworkAlbums = {}
 total_size = 0
 
 logger.info("Analyzing library...")
@@ -129,6 +138,18 @@ for dicts in root.findall(".//dict[key='Location']"):
 
 logger.info("Found " + str(len(tracks)) + " tracks")
 
+if check_artwork:
+    def pict_test(audio):
+        try: 
+            x = audio.pictures
+            if x:
+                return True
+        except Exception:
+            pass  
+        if 'covr' in audio or 'APIC:' in audio:
+            return True
+        return False
+
 # Find all playlists
 for dicts in root.findall(".//dict[key='Playlist ID']"):
     playlist = {
@@ -170,6 +191,14 @@ for dicts in root.findall(".//dict[key='Playlist ID']"):
             tracks_used[id] = tracks[id]
             total_size += tracks[id]['size']
 
+            if check_artwork:
+                artworkIndex = tracks[id]['artist'] + '-' + tracks[id]['album']
+                # Check artwork only if never checked that album
+                if artworkIndex not in artworkAlbums:
+                    file = File(tracks[id]['location_full_path'])
+                    artworkAlbums[artworkIndex] = pict_test(file)
+                    if not artworkAlbums[artworkIndex]:
+                        logger.warning("Track #" + id + " at " + tracks[id]['location_full_path'] + " does not have artwork")
 
     logger.info("Found playlist " + playlist['name'] + " (" + str(len(playlist['tracks'])) + " tracks)")
     playlists.append(playlist)
