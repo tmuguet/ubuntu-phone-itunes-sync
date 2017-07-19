@@ -5,9 +5,9 @@ Scripts to synchronize the iTunes library with an Ubuntu Phone, including music 
 
 By selecting which iTunes playlists you want to synchronize, the script automatically synchronizes all the tracks from these playlists to your phone and creates the playlists in the Music application.
 
-![Synchronizing](http://thomasmuguet.info/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/syncing.png)
+![Synchronizing](http://v7.thomasmuguet.info/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/syncing.png)
 
-![Playlists in the Music app](http://thomasmuguet.info/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/screenshot.png)
+![Playlists in the Music app](http://v7.thomasmuguet.info/img/pages/projects-2015-04-06-itunes-synchronization-for-the-ubuntu-phone/screenshot.png)
 
 This script has been tested with latest iTunes (12.3) with a BQ Aquaris 4.5 Ubuntu Edition running OTA 8.5 and Music app 2.2.945. Should work with previous versions (at least iTunes 12.0, Ubuntu r20 and Music app 2.0).
 

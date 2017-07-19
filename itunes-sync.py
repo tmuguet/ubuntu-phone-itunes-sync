@@ -27,7 +27,7 @@ config.read('settings.ini')
 # Local iTunes library file
 itunes_music_library = config.get('itunes', 'music_library')
 # Check artwork?
-check_artwork = config.getboolean('itunes', 'check_artwork')
+check_artwork = config.getboolean('checks', 'check_artwork')
 # List of playlists to synchronize
 playlists_to_synchronize = list(filter(None, (x.strip() for x in config.get('itunes', 'playlists').splitlines())))
 # Destination of music on the phone
@@ -140,12 +140,12 @@ logger.info("Found " + str(len(tracks)) + " tracks")
 
 if check_artwork:
     def pict_test(audio):
-        try: 
+        try:
             x = audio.pictures
             if x:
                 return True
         except Exception:
-            pass  
+            pass
         if 'covr' in audio or 'APIC:' in audio:
             return True
         return False
