@@ -31,6 +31,7 @@ library_root = config.get('xspf', 'library_root')
 check_artwork = config.getboolean('checks', 'check_artwork')
 # List of playlists to synchronize
 playlists_to_synchronize = list(filter(None, (x.strip() for x in config.get('xspf', 'playlists').splitlines())))
+playlists_ghosts = list(filter(None, (x.strip() for x in config.get('xspf', 'playlists_ghosts').splitlines())))
 # Destination of music on the phone
 # A 'itunes-sync' subfolder will be created with the synced music
 music_destination = config.get('phone', 'music_destination')
@@ -75,7 +76,7 @@ ns = {
     'xspf': 'http://xspf.org/ns/0/'
 }
 
-for p in playlists_to_synchronize:
+for p in playlists_to_synchronize + playlists_ghosts:
     tree = ET.parse(os.path.expanduser(p))
     root = tree.getroot()
     trackList = root[0]
@@ -123,8 +124,11 @@ for p in playlists_to_synchronize:
 
         playlist['tracks'].append(track['location_full_path'])
 
-    logger.info("Found playlist " + playlist['name'] + " (" + str(len(playlist['tracks'])) + " tracks)")
-    playlists.append(playlist)
+    if p in playlists_to_synchronize:
+        logger.info("Selected playlist " + playlist['name'] + " (" + str(len(playlist['tracks'])) + " tracks)")
+        playlists.append(playlist)
+    else:
+        logger.info("Found playlist " + playlist['name'] + " (" + str(len(playlist['tracks'])) + " tracks)")
 
 logger.info("Preparing transfer of " + str(len(tracks_used)) + " tracks - " + str(total_size/(1024*1024)) + "MB...")
 

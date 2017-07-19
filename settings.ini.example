@@ -6,20 +6,25 @@ playlists =
 	MyPlaylist1
 	MyPlaylist2
 	MyPlaylist3
+# List of playlists to synchronize music from, but don't add the playlists themselves
+playlists_ghosts =
+	MyLongPlaylist
 
 [xspf]
 # Root of your library
 library_root = /Volumes/music
 # List of playlists to synchronize
 playlists =
-	/Volumes/music/playlists/Playlist.xspf
-	/Volumes/music/playlists/Playlist-Selection.xspf
 	/Volumes/music/playlists/A.xspf
 	/Volumes/music/playlists/B.xspf
 	/Volumes/music/playlists/C.xspf
 	/Volumes/music/playlists/D.xspf
 	/Volumes/music/playlists/E.xspf
 	/Volumes/music/playlists/F.xspf
+# List of playlists to synchronize music from, but don't add the playlists themselves
+playlists_ghosts =
+	/Volumes/music/playlists/Playlist.xspf
+	/Volumes/music/playlists/Playlist2.xspf
 
 [checks]
 # Whether to check if artwork is present or not in tracks (True/False)

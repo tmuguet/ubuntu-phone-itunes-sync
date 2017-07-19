@@ -30,6 +30,7 @@ itunes_music_library = config.get('itunes', 'music_library')
 check_artwork = config.getboolean('checks', 'check_artwork')
 # List of playlists to synchronize
 playlists_to_synchronize = list(filter(None, (x.strip() for x in config.get('itunes', 'playlists').splitlines())))
+playlists_ghosts = list(filter(None, (x.strip() for x in config.get('itunes', 'playlists_ghosts').splitlines())))
 # Destination of music on the phone
 # A 'itunes-sync' subfolder will be created with the synced music
 music_destination = config.get('phone', 'music_destination')
@@ -171,7 +172,7 @@ for dicts in root.findall(".//dict[key='Playlist ID']"):
         continue
 
     # If we don't want to synchronize this playlist, don't bother parse its tracks
-    if playlist['name'] not in playlists_to_synchronize:
+    if playlist['name'] not in playlists_to_synchronize and playlist['name'] not in playlists_ghosts:
         logger.debug("Found playlist " + playlist['name'] + " (ignored)")
         continue
 
@@ -200,8 +201,12 @@ for dicts in root.findall(".//dict[key='Playlist ID']"):
                     if not artworkAlbums[artworkIndex]:
                         logger.warning("Track #" + id + " at " + tracks[id]['location_full_path'] + " does not have artwork")
 
-    logger.info("Found playlist " + playlist['name'] + " (" + str(len(playlist['tracks'])) + " tracks)")
-    playlists.append(playlist)
+    if playlist['name'] in playlists_to_synchronize:
+        logger.info("Selected playlist " + playlist['name'] + " (" + str(len(playlist['tracks'])) + " tracks)")
+        playlists.append(playlist)
+    else:
+        logger.info("Found playlist " + playlist['name'] + " (" + str(len(playlist['tracks'])) + " tracks)")
+
 
 
 logger.info("Preparing transfer of " + str(len(tracks_used)) + " tracks - " + str(total_size/(1024*1024)) + "MB...")
