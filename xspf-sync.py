@@ -13,6 +13,7 @@ import pickle
 import time
 import logging
 import sys
+import unicodedata
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -88,10 +89,10 @@ for p in playlists_to_synchronize + playlists_ghosts:
 
     for t in trackList:
         track = {
-            'name': t.findtext('xspf:title', "", ns),
-            'artist': t.findtext('xspf:creator', "", ns),
-            'album': t.findtext('xspf:album', "", ns),
-            'location_full_path': t.findtext("xspf:location", "", ns).replace('file://', '')
+            'name': unicodedata.normalize(u'NFC', unicode(t.findtext('xspf:title', "", ns))),
+            'artist': unicodedata.normalize(u'NFC', unicode(t.findtext('xspf:creator', "", ns))),
+            'album': unicodedata.normalize(u'NFC', unicode(t.findtext('xspf:album', "", ns))),
+            'location_full_path': unicodedata.normalize(u'NFC', unicode(t.findtext("xspf:location", "", ns).replace('file://', '')))
         }
 
         if track['location_full_path'] not in tracks_used:
